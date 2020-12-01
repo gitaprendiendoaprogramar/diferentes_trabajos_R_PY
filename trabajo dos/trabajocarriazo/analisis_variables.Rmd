@@ -1,0 +1,386 @@
+---
+title: "Taller_4"
+subtitle: "Estadística descriptiva"
+author: "Zuleima carriazo"
+date: "Septiembre 5 de 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,
+                      message = FALSE,
+                      warning = FALSE)
+```
+
+```{r}
+# cargar librerias para el trabajo.
+library(tidyverse)
+#Registered S3 methods overwritten by 'dbplyr':
+  #method         from
+  #print.tbl_lazy     
+  #print.tbl_sql      
+#-- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+#v ggplot2 3.3.2     v purrr   0.3.4
+#v tibble  3.0.3     v dplyr   1.0.1
+#v tidyr   1.1.1     v stringr 1.4.0
+#v readr   1.3.1     v forcats 0.5.0
+#-- Conflicts ------------------------------------------ tidyverse_conflicts() --
+#x dplyr::filter() masks stats::filter()
+#x dplyr::lag()    masks stats::lag()
+library(readxl)
+library(printr) # para imprimir tablas mas presentables en el html 
+```
+
+
+```{r}
+# cargar la base de datos.
+base <- read_excel("Numb3rs_depuradaCorregida_anonimizada.xlsx")
+nueva <- base # hacer una copia de la base de datos original.
+view(base)
+#summary(base)
+```
+# Datos actualizados.
+
+
+
+```{r}
+# renombrara variable spara trabajar con nombres mas cortos
+nueva <- nueva %>% 
+  rename(variable1 = "¿Vió el primer episodio de la primera temporada de Numb3rs?",
+         variable2 = "Charlie usa el ejemplo de _____ para convencer a su hermano Don que él podría resolver el caso del asesino en serio.",
+         variable3 = Ejemplo_Charlie,
+         variable4 = "¿Por qué no pudo ver el primer episodio de la serie Numb3rs?",
+         variable5 = "¿Qué dice Charlie que puede hacer para atrapar al asesino en serie?",
+         variable6 = "PreguntaCharliedepurada",
+         variable7 = "Charlietecnicadepurada",
+         variable8 = "La razón de no haber encontrado al asesino en el primer intento fue porque ______.")
+```
+## Analisís de los resultados de la pregunta 1
+La siguiete grafica muestra la frecuencia de las dos opcione unicas de repuestas,y en ella podemos notar que la mayoria de estudiantes hizo el deber de ver el episodio solicitado por el profesor.
+
+
+```{r}
+# analisis de la primera variable (¿Vió el primer episodio de la primera temporada de Numb3rs?) 
+variable <- nueva %>% 
+  select(variable1) %>% 
+  group_by(variable1) %>% 
+  summarise("Frecuencia" = n()) %>% 
+  mutate(Porcentaje = round((Frecuencia/sum(Frecuencia))*100,2))# agrege una nueva variable.
+
+ggplot(variable, aes(x=variable1, y=Frecuencia, fill = variable1))+
+  geom_bar(stat="identity", position="stack", color = "blue", width = 0.4)+#width controla el ancho entre
+  #barras
+  scale_fill_discrete(guide = guide_legend(title = "Vista episodio", 
+                                             keywidth = 1, 
+                                             keyheight = 1))+#da nombre a la leyenda
+  ggtitle("Cantida de personas que Si/No vieron el episodio")+
+  theme(axis.title.x=element_blank(),
+        axis.ticks.x=element_blank())# elimina el titulo que queda en el ejex
+  
+```
+
+
+
+
+
+La información presentada en la anterior gráfica, tambíen la podemos visualizar en la siguiente tabla.
+
+```{r}
+tabla <- variable %>% 
+  rename("¿vió episodio?" = variable1)
+tabla
+```
+## Analisís de los resultados de la segunda pregunta.
+La siguente gráfica nos resume la frecuencia de las respuestas que dieron los estudiantes respeto a las tecnicas que uso charlie, y según los resultados obtenidos, nos deja que ver que en su mayoría concidió en que charlie usó agujeros negros. 
+
+
+
+```{r}
+#analisis descriptivo a la variable "Ejemplo_Charlie".
+
+ejemplo_ch <- nueva %>%
+  select(variable3) %>% 
+  group_by(variable3) %>% 
+  summarise(fre = n()) %>% 
+  filter(!variable3 %in% c(NA)) %>% 
+  arrange(desc(variable3))
+  
+# hicimos un cambio de los NA, dandole la descripcion de No reponde
+nueva_fila <- data.frame(variable3 = "No responde", fre = 51)#creacion de una fila con metiendo los #valores de los na
+ejemplo_ch2 <- rbind(nueva_fila, ejemplo_ch)
+#view(ejemplo_ch2)
+
+ggplot(ejemplo_ch2, aes(x=variable3, y=fre, fill = variable3))+
+  geom_bar(stat="identity", position="stack", color = "blue", width = 1)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 0))+
+  geom_text(aes(label= fre), position=position_dodge(width=0.9), vjust=-0.1)+#pone numero sobre barra.
+  ggtitle("Ejemplo_Charlie")+
+  theme(plot.title = element_text(hjust = 0.5))+#centra el titulo de la grafica
+   xlab("Respuestas que presentarón") + 
+  ylab("Frecuencia")+
+   theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+# elimina todo lo que haya en el eje x
+  scale_fill_discrete(guide = guide_legend(title = "Respuestas que presentarón", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+
+
+
+
+La información presentada en la anterior gráfica, tambíen la podemos visualizar en la siguiete tabla.
+
+```{r}
+tabla2 <- ejemplo_ch2 %>% 
+  rename("Respuestas que presentarón" = variable3, "Frecuencia" = fre)
+tabla2
+```
+## Analisís de los resultados de la tercera pregunta.
+En la siguinte gráfica podemos notar el analisís relacionado con las excusas que presentaron los estudiantes al no ver el primer episodio de la serie numbers, en ella podemos notar la amplitud de estas mismas, y la que mas coincide la mayoria de los estudiantes.
+
+```{r}
+# analisis de la variable excusas por no ver el primer episodio.
+#excusas01
+excusas <- nueva %>% 
+  select(Excusa01, Excusa02, Excusa03) %>% 
+  group_by(Excusa01) %>% 
+  summarise(frecu = n()) %>% 
+  filter(!Excusa01 %in% c(NA))
+# se quitan los NA porque son los que representan a la poblacion que si vio el capitulo de la serie.
+
+ggplot(excusas, aes(x=Excusa01, y=frecu, fill = Excusa01))+
+  geom_bar(stat="identity", position="stack", color = "blue")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Excusas")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  xlab("Excusas presentadas") + 
+  ylab("Cantidad")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  scale_fill_discrete(guide = guide_legend(title = "Tipo de excusas", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+
+
+
+La informacion que nos presentó la gráfica anterior, tambíen la podemos visualizar en la siguiente tabla.
+
+```{r}
+tabla3 <- excusas %>% 
+  rename("Tipo de excusas que dieron los estudiantes." = Excusa01, "Frecuencia" = frecu)
+tabla3
+```
+## Analisís de la tercera pregunta, de las otras excusas.
+De la lista de personas que no vieron el primer episodio de la serie numbers, la investigacion arroja que en su mayoria no la vieron, por no tener conocimiento de que había que hacerlo, dejando una igualdad en cuestiones personales, laborales y problesmas de conexión, como lo podemos notar en al siquiente gráfica.
+
+
+```{r}
+
+# analisis de la variable excusas por no ver el primer episodio.
+# analisis de la excusa02
+excusas2 <- nueva %>% 
+  select(Excusa01, Excusa02, Excusa03) %>% 
+  group_by(Excusa02) %>% 
+  summarise(frecu = n()) %>% 
+  filter(!Excusa02 %in% c(NA))
+# se quitan los NA porque son los que representan a la poblacion que si vio el capitulo de la serie.
+
+ggplot(excusas2, aes(x=Excusa02, y=frecu, fill = Excusa02))+
+  geom_bar(stat="identity", position="stack", color = "blue")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Excusas")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  xlab("Excusas presentadas") + 
+  ylab("Cantidad")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  scale_fill_discrete(guide = guide_legend(title = "Tipo de excusas", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+
+
+
+
+
+La información que esta representada en la grafica anterior, tambíen la podemos ver el la siguiente gráfica.
+
+```{r}
+tabla4 <- excusas2 %>% 
+  rename("Tipo de excusas que dieron los estudiantes." = Excusa02, "Frecuencia" = frecu)
+tabla4
+```
+
+
+
+
+
+
+## Depuración de datos de la cuarta pregunta.
+En esta ocasión no se reprento la información detallada en una gráfica, porque se consideró que se representa mejor esta información en una tabla.
+Simplemente se dividiero las opiniones entre la mudanza del asesino y fallas matemáticas de charlie.
+
+
+```{r}
+# Analisis de variable PreguntaCharliedepurada
+pregunta <- nueva %>% 
+  select(variable6) %>% 
+  group_by(variable6) %>% 
+  summarise(total = n())
+
+tabla5 <- pregunta %>% 
+  rename("Pregunta Charlie depurada" = variable6, "Frecuencia" = total)
+tabla5
+```
+## Analisís de la quita pregunta.
+
+El dato mas resaltante es la concidencia que tuvimos al elegir los agujeros negros como ejemplo de la tecnicas de charlie para atrapara el asesino.
+
+
+
+
+```{r}
+#Analisis de la variable Charlietecnicadepurada
+tecnica <- nueva %>% 
+  select(variable7) %>% 
+  group_by(variable7) %>% 
+  summarise(cantida = n()) %>% 
+  filter(!variable7 %in% c(NA))
+
+
+ggplot(tecnica, aes(x=variable7, y=cantida, fill = variable7))+
+  geom_bar(stat="identity", position="stack", color = "blue")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Respuestas según las tecnicas que uso charlie")+
+  theme(plot.title = element_text(hjust = 0.5))+
+  xlab("Tecnicas de charlie") + 
+  ylab("Cantidad de estudientes que votaron por cada tipo de tecnica")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  scale_fill_discrete(guide = guide_legend(title = "Tecnicas de charlie", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+  
+
+#guides(fill = FALSE) me quita los nombre de la leyenda
+#coord_flip() me cambia el sentido de la grafica
+
+```
+
+
+
+
+
+En la siguiente tabla se puede visualizar la información que se presentó en la gráfica anterior.
+
+
+
+```{r}
+tabla6 <- tecnica %>% 
+  rename("Opciones de tecnicas de las que uso charlie" = variable7, "Cantida por cada una" = cantida)
+tabla6
+```
+
+
+
+
+
+## Analisis de la pregunta sesta.
+
+Aquí podemos notar la variedad de opiniones que tuvimos al responder el porque no se encontro el asesino el la primera ocasion que se le busco, como se puede ver en la siguiente gráfica.
+
+```{r}
+#Analisis de la variable Razondepurada.
+razon <- nueva %>% 
+  select(Razondepurada) %>% 
+  group_by(Razondepurada) %>% 
+  summarise(cantida = n()) %>% 
+  filter(!Razondepurada %in% c(NA)) %>% 
+  mutate(Razondepurada = str_replace(Razondepurada, "El asesino se habia mudado recientemente y no habia tenido encuenta otro foco", "se mudo recientemete y no se tuvo en cuenta"))
+
+ggplot(razon, aes(x=Razondepurada, y=cantida, fill = Razondepurada))+
+  geom_bar(stat="identity", position="stack", color = "blue")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 0))+
+  ggtitle("Razones no se encontro el asesino")+
+  theme(plot.title = element_text(hjust = 0.3))+
+  xlab("Razones no se encontro el asesino") + 
+  ylab("Cantida de repuestas repecto a cada razón")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+  scale_fill_discrete(guide = guide_legend(title = "Razones no se encontro el asesino", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+
+```
+
+
+
+
+En la tabla que se presenta a continuación se puede ver la informacion que está representando la gráfica aterior.
+```{r}
+tabla7 <- razon %>% 
+  rename("Razon por la que no encontro el asesino por primera ves" = Razondepurada, "Frecuencia de las opciones de cada opcion de repuesta" = cantida)
+tabla7
+```
+
+
+```{r}
+tp_ga_lo <- nueva %>% 
+  rename(tp_ga_lot = "¿Cada cuántos años se podría ganar una vez la lotería el agente del FBI?")
+
+```
+
+## Analisis de la septima pregunta.
+La minoria de los estudiantes al ver el primer episodio de la serie numbers no detalló en la cuentas que sacó charlie para darle el año exacto en que se podria ganar la lotería y esto se puede visualizar en la siguinte gráfica.
+
+
+
+
+```{r}
+#Analisis de la variable ¿Cada cuántos años se podría ganar una vez la lotería el agente del FBI?.
+tiempo <- tp_ga_lo %>% 
+  select(tp_ga_lot) %>% 
+  group_by(tp_ga_lot) %>% 
+  summarise(cantida = n()) %>% 
+  filter(!tp_ga_lot %in% c(NA))
+
+ggplot(tiempo, aes(x=tp_ga_lot, y=cantida, fill = tp_ga_lot))+
+  geom_bar(stat="identity", position="stack", color = "blue")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 0))+
+  ggtitle("Tiempo que en que se podria demorar en ganar la loteria el agente.")+
+  theme(plot.title = element_text(hjust = 0.3))+
+  xlab("Tiempo.") + 
+  ylab("Cantidad de estudiantes.")+
+  guides(fill = FALSE)
+
+```
+
+
+## Conclusión.
+Al ver el primer episodio de la serie numbers,mis compañeros y yo tuvimos desaciertos validos que se reflejan en la graficas y tablas, tuvimos tambíen respuestas redactadas de modo diferente, pero que sematicamente concluyen una misma cosa.
+Se hicieron depuraciones de estas mismas, y se agregaron componentes visulaes para evidenciar lo planteado en detalle.
+
+## Recomendaciones.
+No tengo recomendaciones que dar, estoy de acuerdo con todo.
+
+
+```{r}
+
+j <- nueva[(nueva[,"variable5"]== "origen") & (nueva[, "variable5"] == "zona"),]
+view(j)
+
+```
+
+
+
+
+

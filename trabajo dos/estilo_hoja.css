@@ -1,0 +1,23 @@
+.caja {
+    background: blue;
+    width: 200px;
+    float: left;
+    margin-left: 100px;
+    border-radius: 35px 0px 35px 0px;
+    -moz-border-radius: 35px 0px 35px 0px;
+    -webkit-border-radius: 35px 0px 35px 0px;
+}
+
+.Thomas {
+    font-size: 60px
+}
+
+.caja_inicio {
+    float: right;
+    background: green;
+    width: 500px;
+    margin-right: 50px;
+    border-radius: 35px 0px 35px 0px;
+    -moz-border-radius: 35px 0px 35px 0px;
+    -webkit-border-radius: 35px 0px 35px 0px;
+}

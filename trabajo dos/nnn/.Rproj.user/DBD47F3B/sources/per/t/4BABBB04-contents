@@ -1,0 +1,78 @@
+---
+title: "Precio del aguacate hass de exportación en los últimos 6 años"
+Autor: "Zuleima Beatriz"
+correo: zcarriazo@unal.edu.co
+Date: 18/08/2020
+output:
+   html_document:
+     toc: yes
+     css: estilo1.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,
+                       message = FALSE,
+                      warning = FALSE)
+```
+
+```{r}
+library(readxl)
+aguacate <- read_excel("Libro2.xlsx")
+
+```
+
+# Precio del aguacate de exportación
+<p class = "loca">ya que esta grafica tomada de (https://www.bbc.com/mundo/noticias-49209380) va dirigida un publico en general, la manera en la que esta presentada no es  la mas idonea para la compreción de dicho publico, para todos estos no es facil comprender el precio correcto(expecifico), la forma en la que se preseta la reacion de varible debería estar a la inversa, ademas de que debería dar un dato preciso del valor en cada año, tambien no presenta un nombre para cada variable, se le debería incluir un denileancion sobre cada barra, para darle una mejor interpretación.</p>
+
+<left>![grafica anterior](grafica.jpg.jpeg){width=30%}</center>
+
+
+```{r}
+# preparación de los datos
+tab <- aguacate[, c(2)] # Exportacionde variables 
+tab <- as.matrix(tab) # convertir el tibble a una matrix
+row.names(tab) <- aguacate$year # sacar el año de la matrix y dejar el resto como un vector para poder trasponer  
+tab <- t(tab) # trasponer la matrix
+```
+
+# Propuestas Para Nueva Grafica
+
+<p class = "loca4">**1.** Añidir un delineo a la grafica.</p>
+
+<p class = "loca6">**2.** Nombre a las variables.</p>
+
+<p class = "loca7">**3.** Invertir la forma en la que esta presentada.</p>
+
+<p class = "loca9">**4.** Ponerle el dato especifico encima de cada barra.</p>
+
+```{r}
+# graficacion de los datos
+
+param_ant <- par(no.readonly = TRUE)
+par(mar = param_ant$mar + c(2, 0, 3, 5))
+bg <- barplot(tab,
+              ylim = c(0, 5),
+              ylab = "En Millones De Dolares",
+              main = "Precio Del Aguacate De Exportación",
+              beside = TRUE,
+              col = c("#67a9cf"))
+mtext(text = "Año", side = 1, line = 4, cex = 2)
+text(bg[1, ], tab[1, ]+0.2, labels = tab[1, ])
+grid(nx = NA, ny = NULL)
+```
+
+
+<p class = "loca2">En esta ultima grafica podemos presentar una mejor propuesta al publico en general puesto que le facilitamos la interpresentacion de los datos en cuestión, es facil darnos cuenta de que las exportaciones de aguacate en el año 2013 fueron de 2.5 millones de dolares, y así los demas años.</p>
+
+```{r}
+# Propuesta en ggplot2
+#ggplot(data= aguacate, aes(x=year, y= precio_en_millones_USD)) + 
+     #geom_bar(position = 'dodge', stat='identity', fill = "green") +
+     #geom_text(aes(label= precio_en_millones_USD), position=position_dodge(width=0.9), vjust=-0.25)+
+   #xlab("Año") + 
+  #ylab("Precio en millones de Dolares") + 
+  #ggtitle("Precio del aguacate de exportación")+
+  #theme_classic()
+  
+```
+

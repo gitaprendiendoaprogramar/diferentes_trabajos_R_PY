@@ -1,0 +1,723 @@
+---
+title: "Encuesta sobre hábitos de estudio 3"
+author: "Zuleima carriazo"
+date: "Miércoles, 16 de septiembre de 2020"
+output: 
+  html_document: 
+    toc: yes
+    theme: readable
+    css: estilo1.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+#install.packages("stringr")               # Install stringr package
+library("stringr")
+library(lubridate)
+#install.packages("datos")
+library(datos)
+library(tidyverse)
+```
+# Analisis descriptivo y exploratoria de la incuenta habitos.
+
+```{r}
+base <- read.csv2("Encuesta_habitos2.csv", 
+                       encoding = "UTF-8",)
+```
+
+## Depuración de la variable Carrera, dentro de la asignatura en la cual se hizo esta encuesta 
+
+Se encuentra en la base de datos original diferentes formas de nombrar una misma carrera, así que  se hace la compilacion de los datos y enseguida colapsaremos a un solo nombre que representa de manera ideal todas las anteriores formas en que fueron escritas, creando una nueva columna con el nombre correcto para cada una.
+
+```{r depuracionde la variable carrera}
+
+
+#Se encuentra en la base de datos original diferentes formas de nombrar una misma carrera, así que  se hace la compilacion de los datos y enseguida colapsaremos a un solo nombre que representa de manera ideal todas las anteriores formas en que fueron escritas, creando una nueva columna con el nombre correcto para cada una.
+
+base2 <- base %>% 
+  select(fecha_nac, carrera) %>%
+  mutate(carrera = str_replace(carrera, "Ingeniería de sistemas e infor", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Ing. de Sistemas e Informática", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "ING. Sistemas", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Ing. Sistemas", "sistemas")) %>%
+  mutate(carrera = str_replace(carrera, "Ingeniería de sistemas e inf", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Ing. sistemas e informática", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Ingeniería de Sistemas e Infor", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Ingenieria de sistemas e Infor", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Ing. De Sistemas e Informática", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Ingería de sistemas e informat", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "Sistemas e Informática", "sistemas")) %>%
+  mutate(carrera = str_replace(carrera, "ing sistemas", "sistemas")) %>% 
+  mutate(carrera = str_replace(carrera, "ing de sistemas e informatica.", "sistemas")) %>%
+  mutate(carrera = toupper(carrera))
+## lo hice ya que habia estadistica con la primera en mayuscula, otra con tilde, otra con punto, entonces se hacia mas # largo
+
+base2 <- base2 %>%
+  select(carrera, fecha_nac) %>%
+  mutate(carrera = str_replace(carrera, "ESTADISTICA", "ESTADÍSTICA")) %>% 
+  mutate(carrera = str_replace(carrera, "ESTADSITICA", "ESTADÍSTICA")) %>%
+  mutate(carrera = str_replace(carrera, "INGENIERÍA DE SISTEMAS", "SISTEMAS")) %>% 
+  mutate(carrera = str_replace(carrera, "INGENIERÍA EN SISTEMA", "SISTEMAS")) %>% 
+  mutate(carrera = str_replace(carrera, "INGENIERÍA DE SISTEMASS", "SISTEMAS")) %>% 
+  mutate(carrera = str_replace(carrera, "SISTEMASS", "SISTEMAS")) %>% 
+  mutate(carrera = str_replace(carrera, "INGENIERIA DE SISTEMAS", "SISTEMAS")) %>% 
+  mutate(carrera = str_replace(carrera, "INGENIERÍA FÍSICA.", "INGENIERÍA FÍSICA"))
+
+```
+Al analizar la siguiente gráfica podemos observar que más de 60 estudiantes estudia el pregrado de estadística mas precisamente 70 estudiantes de 132 lo que nos muestra una gran mayoría, dicha mayoría se puede explicar por la importancia de la materia y su obligatoriedad en el pensum, Seguidamente encontramos ingeniería de sistemas con 47 estudiantes lo que se podría explicar por el uso del programa R a lo largo de este curso y su manejo de sistemas computacionales, posteriormente encontramos ingeniería administrativa e ingeniería física con dé a 3 estudiantes cada pregrado, es de resaltar el bajo número de estudiantes matriculado en el curso de los pregrados de matemáticas e ingeniería industrial uno supondría que para dichos pregrados es importante el manejo de datos que les aportaría a los futuros profesionales el curso de estadística descriptiva y exploratoria, por ultimo encontramos los datos de ingeniería biológica y de control con 1 estudiante cada uno de los pregrados, es curioso ponernos a pensar la importancia que los estudiantes de estas carreras le otorgan a este curso, que valor agregado creen que este curso les brindara.
+
+
+```{r analisis descritivo de la variable carreras}
+# tipo de varibale : discreta
+
+carrera <- base2 %>% 
+  group_by(carrera) %>% # agrupo por carrera
+  summarise(cantidad = n()) %>%
+  arrange(desc(cantidad))
+## hace un conteo para crear una tabla de frecuencia
+
+
+
+## grafica del la variable discreta
+
+
+
+ggplot(data=carrera, aes(x=carrera, y=cantidad, fill = carrera)) + 
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Carreras por estudientes encuestados en la asignatura")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("Carrera") + 
+  ylab("Cantidad de estudistes por carrera")+
+  scale_fill_discrete(guide = guide_legend(title = "En detalle", 
+                                             keywidth = 1, 
+                                             keyheight = 1)) # me pone nombre  a la leyenda.
+
+```
+
+## Depuración  y analisis descriptivo de la variable genero
+
+
+```{r depuracion de la variable genero}
+# tipo de variable
+str(base$genero)
+# discreta(chr)
+## los dados de la variable se incuentra en orden por tanto no requirio de una depuracion, por tanto procedemos a hacer ## un analisis descriptivo
+
+
+
+
+## creamos la tabla de frecuencias para genero
+var_ganero <- base %>% 
+  select(genero, fecha_nac) %>% 
+  group_by(genero) %>% 
+  summarise(cantidad = n())
+
+
+
+```
+
+Los resultados que obtenimos al realizar la depuracion y la descripcion de la variable genero, son los siguientes; segun los datos generados por la incuesta habitos notamos que la mayoria de los estudinates son de genero masculino, como lo podemos notar en la siguiente grafica.
+
+
+```{r}
+
+## creacion de la grafica 
+
+
+ggplot(data=var_ganero, aes(x=genero, y=cantidad, fill = genero)) + 
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Cantidad de hombres y mujeres que están cursando la materia")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("Genero") + 
+  ylab("Cantidad por genero")+
+  scale_fill_discrete(guide = guide_legend(title = "Tipo de genero", 
+                                             keywidth = 1, 
+                                             keyheight = 1)) # me pone nombre  a la leyenda.
+
+```
+
+
+
+## Analisis y depuracion de la variable fecha de nacimiento 
+
+Acontinuación exploramos la variable fecha de nacimiento y la sustituimos por la variable artificial año, en la primera, encontramos algunas inconsistencias, asi que se quitaron las dos fechas mencionadas también se eliminó dos datos que se consideraron incorrectos, que son 1956, 1977, ya que es casi imposible que tenga esa edad y este estudiando ese curso, es decir que tenemos un compañero o compañera de 64 o 43 años de edad es difícil de creer, optamos por retirar dichos datos ya que nos es difícil pensar que compartimos salón de clases o en este caso virtualidad con alguien de tanta edad, además nos es difícil investigar y no tenemos la oportunidad de observar el físico de la persona de forma presencial para afirmar que compartimos en el curso con alguien de esas características, dichas 2 observaciones no se remplazan por el promedio porque son solo dos y no afecta mucho a las 132. Hubo un dato donde aparecía un signo de exclamación en este dato se infirió que pudo haber un error de digitación, entonces se puso un 1.
+ 
+Tomamos la decisión de hacer una variable artificial solo con el año de nacimiento, para poder trabajar de una manera más eficiente, también porque algunos datos como el día y el mes los dejamos de lado ya que nos pareció oportuno y necesario trabajar solo con el año de nacimiento, observamos que para nuestro estudio es lógico pensar solo en el año de nacimiento de cada estudiante y no adentrarnos en que mes y día preciso fue el que nació.
+Se encontraron 7 datos que salen en 2020, lo cual es una inconsistencia, se toma la decisión de remplazarlos por el promedio, ya que son 7 datos y representan (x) porcentaje en nuestro estudio, también podríamos suponer que el compañero o compañera no leyó bien la pregunta y pudo haber puesto la fecha de ese día. Además, se convirtió año a numérico para poder sacar los estadísticos de la variable.
+
+Se tomó la decisión de omitir los NA ya que no hacen una gran representación. Se toma la decisión de hacer 2 gráficas para que quedara cómodo para visualizar por parte del lector, decimos esto en el sentido de que el lector pueda observar unas dimensiones aceptables, por eso en una gráfica tenemos los datos de 0 a máximo 5 personas nacidas en los años 1982, 1983, 1987, 1989, 1992, 1993, 1994, 1997 y en la otra grafica tenemos los datos que van de 0 a 30 estudiantes nacidos en los años 1995, 1996, 1998, 1999, 2000, 2001, 2002, 2003. las muestras nos arrojan resultados como que 75 estudiantes nacieron después del año 2000, es decir más de la mitad de estudiantes tienen menos de 20 años, 51 personas nacieron entre los años 1990 y 1999 y por ultimo tendríamos que 4 personas nacieron entre 1980 y 1989.
+
+```{r depuracion de la variable fecha de nacimiento y analisis descriptivo}
+
+fecha_naci <- base %>% 
+  select(fecha_nac, PAPA, carrera) %>% 
+  mutate(fecha_nac = str_replace(fecha_nac, "7102003", "7/10/2003")) %>% 
+  mutate(fecha_nac = str_replace(fecha_nac, "170992", "17/09/1992")) %>% 
+  mutate(fecha_nac = str_replace(fecha_nac, "//83", "1983")) %>% # esto se intuyo que era de 1983
+  mutate(Año = str_sub(fecha_nac, -4, -1)) %>% # tamabien se puede extraer el solo año con (substr("x", # # # "star=", "stop="))
+  filter(!Año %in% c("1956", "1977")) # se quitaron las dos fechas mencionadas
+
+## tambien se elimino dos datos que se cosideraron incorrectos, que son 1956, 1977, ya que es casí 
+# imposible que tenga esa edad y este estudiando ese curso.
+
+
+  # en este dato se infirio que pudo haber un errror de digitacion, entonces se puso un 1
+  # tomamos la dedecion de hacer una variable artificial solo con el año de nacimiento,
+  # para poder trabajar de una manera mas eficiente, tambien porque algunos datos no contabamos con los
+  # otros datso, como el dia y el mes.
+
+
+
+
+# se encotraron 7 datos que salen en 2020, lo cual es una inconsistencia, se toma la decion de 
+# de remplazarlos por el promedio, ya que son 7 datos y representan (x) porcentaje, lo ponen lo sacan
+
+## se convirtio año a numerico para poder sacar los estdisticos de la variable
+
+fecha_naci <- fecha_naci %>% 
+  select(fecha_nac, Año, PAPA) %>% 
+  mutate(Año = as.numeric(Año))
+
+ estadiscos_de_año = summary(fecha_naci$Año)
+ 
+ ## se convierte a factor para poder remplazar los valores
+ 
+ fecha_naci <- fecha_naci %>% 
+  select(fecha_nac, Año, PAPA)%>%
+   mutate(Año = as.character(Año)) %>% 
+   mutate(Año = str_replace(Año, "2020", "2000"))
+ 
+  
+# se comprueva 
+  
+str(fecha_naci$Año)
+ 
+ 
+## Analisis de la variable artificial Año, que sustituye a fecha de nacimiento
+
+fecha_naci2 <- fecha_naci %>% 
+  select(Año, PAPA) %>% 
+  group_by(Año) %>% 
+  summarise(cantidad = n()) %>% 
+  arrange(desc(cantidad))
+  
+view(fecha_naci2)
+# se va a dividir la tabla en dos para poder representarla informacion de una manera mas apropiada
+
+#se dividio segun la frecuancia de los años de nacimiento, la primera represta desde el año que se 
+# repite 5 veces hasta el mas frecuente, la segunda contendra los restantes, es decir de 1 hasta 4
+
+
+
+tabla1 <- fecha_naci2 %>% 
+  select(Año, cantidad) %>% 
+  filter(cantidad %in% c(30:6))
+
+
+
+## creacion de la segunda tabla
+
+tabla2 <- fecha_naci2 %>% 
+  select(Año, cantidad) %>% 
+  filter(cantidad %in% c(1:5))
+
+```
+## grafica uno
+
+```{r}
+
+# grafico de l primera tabla
+ggplot(data=tabla1, aes(x=Año, y=cantidad, fill = Año)) + 
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Frecuencia del año de nacimiento del (porcentaje) del los estudiantes")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("Año") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "Año de nacimiento", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+
+```
+
+## grafica dos
+```{r}
+
+# graficación de la segunda tabla
+
+ggplot(data=tabla2, aes(x=Año, y=cantidad, fill = Año)) + 
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Año de nacimiento de los estudientes de la encuesta")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia de nacimiento por año")+
+  scale_fill_discrete(guide = guide_legend(title = "Año de nacimiento", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+# Analisis descriptivo y exploratorio de la variable PAPA
+
+En un analisis a la grafica anterior que representa los datos del porcentaje aritmetico, ponderado, acumulado, de los estudiantes que participaron en esta encuesta podemos notar que esta variable relacionada con el PAPA deja ver que, desde luego se tiene un promedio acumulado ponderado aritmetico que parte de 3; seria contradictorio encontrar promedios mas bajos ya que estos resultados no harían parte del estudiantado de la universidad. La grafica tambien deja ver como algunos estudiantes mantienen con otros el mismo acumulado, y asi mismo muestran una diferencia importante entre este y el acumulado de otros compañeros, debiendose tal vez a la diferencia existente entre las herramientas de estudio con las que se cuenta, (teniendo en cuenta el estrato) y/o  los habitos de estudio que cada estudiante practica, en 20 estudiantes de esta encuesta, compiten por mantener un PAPA, al rededor de 3,7
+
+```{r depuracion de la variable PAPA y analisis descriptivo}
+# tipo de variable
+# numerica, o continua
+# esta variable en el fondo es categorica, es por eso que se va a trabajar como chr
+
+# se tomó la decision de omitir los na ya que no hacen una gran representacion.
+
+papa <- base %>% 
+  select(carrera, genero, PAPA) %>%
+  na.omit(PAPA)%>% 
+  group_by(PAPA) %>% 
+  summarise(cantidad = n()) %>% 
+  arrange(desc(PAPA))
+
+
+
+
+
+
+## grafico para la variable 
+
+ggplot(data=papa, aes(x=PAPA, y=cantidad, fill = PAPA)) + 
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("dristribucion del papa de los estudiantes queestan viendo l materia")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("Papa") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "PAPA  del estudiante", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+
+
+
+```
+
+
+
+## Analisis descriptivo y exploratorio de la variable estrato.
+
+
+La variable estrato es categórica y cabe mencionar el gran número de estudiantes que se concentrar en estratos 2 y 3, 96 estudiantes se ubican en estos 2 estratos representando casi el 75% de la población en el muestreo, también es bueno resaltar que tenemos de a 1 compañero en los extremos de la observación, tanto en el estrato 0 como en el 5, cmo se puede observar en al siguinte grafica
+
+```{r depuracion de la estrato y analisis descriptivo}
+# tipo de variable chr
+
+
+
+estrato <- base %>% 
+  select(estrato, PAPA, carrera) %>% 
+  na.omit(estrato) %>% 
+  mutate(estrato = as.character(estrato)) %>% 
+  group_by(estrato) %>% 
+  summarise(cantidad = n())
+
+ggplot(data=estrato, aes(x=estrato, y=cantidad, fill = estrato)) + 
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Frecuencia de estrato de los estudiantes que estan vienvo la materia")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("Papa") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "Estrato del los estudiante", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+
+```
+
+## Analisis descritivo y exploratorio de la variable computado_mesa.
+
+Esta variable es de tipo discreta, no requirio de una depuracion, ya que lo dados encontrados en la tabal se encontraban en un buen estado para poder trabajar sobre ellos, lo reslutados optenidos lo podemos visulizar en la siguinte grafica. En ella podmeos notar que la mayoria de los estudiantes no tienen computador de mesa, suponemos que se debe a que tiene es computadora portatil. Como dados curiosos encotramos que hay estudiantes que tiene pero de manera alquilada o prestada, una posible causa de ello puede ser  los bajos recursos que puede presentar la persona, o un daño en la computadora de ella(o).
+
+
+```{r depuracion y analisis descriptivo de la variable computador_mesa, fig.height=7}
+
+# no se aplico ninguna depuracion ya que la variable estab en buen estado
+
+computador_mesa <- base %>% 
+  select(computador_mesa, carrera, PAPA, genero) %>% 
+  group_by(computador_mesa) %>% 
+  summarise(cantidad = n()) %>% 
+  arrange(cantidad)
+
+
+
+
+
+ggplot(data=computador_mesa, aes(x= computador_mesa, y=cantidad, fill = computador_mesa))+
+  geom_bar(stat="identity", width = 0.6)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("dristribucion del papa de los estudiantes queestan viendo l materia")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("Papa") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "Estrato del los estudiante", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+
+```
+
+
+# Analisis descritivo y exploratorio de la variable portatil.
+
+Esta variable categórica va mostrando como los estudiantes van cambiando sus herramientas de trabajo, por otras mas cómodas para sus estrategía de estudio, estos nos lleva a pensar que puede deberse a la practicidad que proporciona los diferentes tipos de tecnologia actual, frente a tecnologias que bien, pueden cumplir en todo su función pero ya o serían faciles de manejar, y/o refiriendonos a que de computador de mesa muchos de los compañeros anotaron que no cuentan con éste, y de los pacos que portatil.
+
+
+
+```{r  depuracion de y estadistica descriptiva de la variable portatil}
+
+
+portatil <- base %>% 
+  select(PAPA, portatil, carrera) %>% 
+  na.omit(portatil) %>% 
+  group_by(portatil) %>% 
+  summarise(cantidad = n()) 
+
+
+
+```
+
+
+En la gráfica de la variable categórica portátiles podemos encontrar que cerca del 75% de los estudiantes matriculados en el curso posee computador portátil y propio lo que facilita que se atienda a las actividades del curso, podemos decir también que más del 75 % de los alumnos posee computador portátil lo que muestra que la gran mayoría de los estudiantes estamos conectados, podríamos preguntarnos si tienen computador portátil y de mesa o solamente portátil, podríamos preguntarnos si los 16 estudiantes que dicen no tener portátil tienen computador de mesa o si en verdad no disponen de computador para atender a las clases y actividades del curso, cabe resaltar que al menos 15 estudiantes si tienen portátil pero no es de ellos propiamente según esta información surgirían dudas sobre si deben compartir el computador, si tienen inconvenientes en la entrega de los talleres por el hecho que tal vez algún familiar ocupe el dispositivo electrónico o cosas por el estilo
+
+
+```{r}
+ggplot(data=portatil, aes(x= portatil, y=cantidad, fill = portatil))+
+  geom_bar(stat="identity", width = 0.6)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Distribucion de la tenencía de pc portatil")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "Tenencía", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+# Analisis descriptivo y exploratorio de la variable smartphone.
+
+Esta variable no se le realizo ningun tipo de depuracion ya que se encontraba en un buen estado para trabajar sobre ella. Los resultados son los esperados, que la mayor parte de los estudiantes tegan celular inteligente, tambien encontramos como dato curiosos o que se incuentra personas que tienen celular alquilado o que no tienen, es de sorprederse debido a la era digital que stamos viviendo, suponemos ques e debe a algun daños del celular inteligen de la persona y es por ello que tiene uno prestado o alquilado. Estos resultados los podemos notar o visualizar en la siguinte grafica.
+
+
+```{r depuracion y analisis descriptivo de la avariable smartphone}
+
+
+smartphone <- base %>% 
+  select(smartphone, carrera) %>% 
+  na.omit(smartphone) %>% 
+  group_by(smartphone) %>% 
+  summarise(frecuencia = n())
+
+
+ggplot(data=smartphone, aes(x= smartphone, y=frecuencia, fill = smartphone))+
+  geom_bar(stat="identity", width = 0.6)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Dristribucion del la tenencia de celular inteligente")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "Tenencía", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+
+
+```
+
+## Analisis descriptico y exploratorio de la variable origen_covid_19
+
+Esta variable se encontro en buen estado, por lo tanto no requierio de una depuracion, por lo que se continuo a hacer una estadistica descriptiva, y los resultados optenidos los podemos notar en la siguiente grafica, en ella podemos notar que la hipotesis con mas fuerza es; fue resultado de pasar el virus de los animales a los humanos, seguida por, Fue fabricado en un laboratorio.
+
+```{r depuracion y analisis descriptivo de la variable origen_covid_19, fig.height=7}
+
+
+
+covid <- base %>% 
+  select(origen_covid_19, carrera, PAPA) %>% 
+  na.omit(origen_covid_19) %>% 
+  group_by(origen_covid_19) %>% 
+  summarise(frecuencia = n()) %>% 
+  arrange(frecuencia)
+view(covid)
+
+
+ggplot(covid, aes(x= origen_covid_19, y= frecuencia, fill = origen_covid_19))+
+  geom_bar(stat="identity", width = 0.6)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Distribucion de las posibles hipotesis del origen del covid")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "Hipotesis", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+## Analisis descriptico y exploratorio de la variable esta_gov
+
+Estadisticas del gobierno y la creencia que tienen los estudiantes acerca de su veracidad
+Se explora esta variable y se encuentra algunos espacios vacios, se concluye que aunque anonimizada la encuesta, algunos estudiantes prefieren no opinar acerca del tema, no responden.
+
+Es interesante notar que los resultados de esta gráfica muestre tal magnitud de desconfianza hacia este tema, esto podría deberse a recientes visualizacones de graficas que no corresponden en programas de la television Colombiana. Esto lo podemos visualizar en la siguiente grafica.
+
+```{r depuracion de la variable esta_gov y estadistica descriptiva}
+
+esta_gov <- base %>% 
+  select(estad_gov, carrera, PAPA) %>%
+  mutate(estad_gov = str_replace_na(estad_gov, replacement =  "No respondierón")) %>% 
+  group_by(estad_gov) %>% 
+  summarise(frecuencia = n())
+
+ggplot(esta_gov, aes(x= estad_gov, y= frecuencia, fill = estad_gov))+
+  geom_bar(stat="identity", width = 0.6)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Confianza sobre el gobierno")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+
+
+# Analisis descriptivo y exploratorio de los habitos
+
+```{r}
+# selecion de todos los conjuntos de habitos 
+habitos <- base %>% 
+  select(habito_1, habito_2, habito_3, habito_4, habito_5, habito_6, habito_7, habito_8, habito_9, habito_10, habito_11, habito_12, habito_13, habito_14, habito_15, habito_16, habito_17)
+
+
+```
+
+
+
+```{r}
+# se agropo habito por habito por habito, y se le hizo una sumatoria, guardadolos en una objeto llamado tabla, lugo se unieron todas la tablas y de hay se volvio a hacer un reagrupamiento con su respentiva sumatoria.
+
+
+tabla1 <- habitos %>% 
+  group_by(habito_1) %>% 
+  summarise(n = n())
+tabla1 <- rename(tabla1,  habitos = habito_1)
+
+
+
+tabla2 <- habitos %>%
+  group_by(habito_2) %>% 
+  summarise(n = n())
+tabla2 <- rename(tabla2,  habitos = habito_2)
+
+
+tabla3 <- habitos %>%
+  group_by(habito_3) %>% 
+  summarise(n = n())
+tabla3 <- rename(tabla3,  habitos = habito_3)
+
+
+tabla4 <- habitos %>% 
+  group_by(habito_4) %>%  
+  summarise(n = n())
+tabla4 <- rename(tabla4,  habitos = habito_4)
+
+
+tabla5 <- habitos %>% 
+  group_by(habito_5) %>% 
+  summarise(n = n()) 
+tabla5 <- rename(tabla5,  habitos = habito_5)
+
+
+
+tabla6 <- habitos %>% 
+  group_by(habito_6) %>% 
+  summarise(n = n()) 
+tabla6 <- rename(tabla6,  habitos = habito_6)
+
+
+tabla7 <- habitos %>% 
+  group_by(habito_7) %>% 
+  summarise(n = n())
+tabla7 <- rename(tabla7,  habitos = habito_7)
+
+
+tabla8 <- habitos %>% 
+  group_by(habito_8) %>% 
+  summarise(n = n())
+tabla8 <- rename(tabla8,  habitos = habito_8)
+
+
+tabla9 <- habitos %>% 
+  group_by(habito_9) %>% 
+  summarise(n = n())
+tabla9 <- rename(tabla9,  habitos = habito_9)
+
+
+tabla10 <- habitos %>% 
+  group_by(habito_10) %>% 
+  summarise(n = n())
+tabla10 <- rename(tabla10,  habitos = habito_10)
+
+tabla11 <- habitos %>% 
+  group_by(habito_11) %>% 
+  summarise(n = n())
+tabla11 <- rename(tabla11,  habitos = habito_11)
+
+
+tabla12 <- habitos %>% 
+  group_by(habito_12) %>% 
+  summarise(n = n())
+tabla12 <- rename(tabla12,  habitos = habito_12)
+
+tabla13 <- habitos %>% 
+  group_by(habito_13) %>% 
+  summarise(n = n())
+tabla13 <- rename(tabla13,  habitos = habito_13)
+
+
+tabla14 <- habitos %>% 
+  group_by(habito_14) %>% 
+  summarise(n = n())
+tabla14 <- rename(tabla14,  habitos = habito_14)
+
+
+
+
+tabla15 <- habitos %>% 
+  group_by(habito_15) %>% 
+  summarise(n = n())
+tabla15 <- rename(tabla15,  habitos = habito_15)
+
+
+
+tabla16 <- habitos %>% 
+  group_by(habito_16) %>% 
+  summarise(n = n())
+tabla16 <- rename(tabla16,  habitos = habito_16)
+
+
+
+
+tabla17 <- habitos %>% 
+  group_by(habito_17) %>% 
+  summarise(n = n())
+tabla17 <- rename(tabla17,  habitos = habito_17)
+
+
+
+## union de todas la bases de datos
+tabla_ge <- rbind(tabla1, tabla2, tabla3, tabla4, tabla5, tabla6, tabla7, tabla8, tabla9, tabla10, tabla11, tabla12, tabla13, tabla14, tabla15, tabla16, tabla17)
+
+
+
+
+
+# reagrupamiento de la nueva base de datos.
+
+b <- tabla_ge %>%
+group_by(habitos) %>%
+summarise(Total = sum(n)) %>% 
+  arrange(desc(Total)) %>% 
+  na.omit(habitos)
+
+
+
+# se van a presentar los resultado ontenidos en dos tablas para tener una mejor presentación
+
+
+
+```
+
+
+```{r fig.height=5}
+habitos111 <- b %>%
+  select(habitos, Total) %>% 
+  filter(Total %in% c(90:62))
+
+
+ggplot(habitos111, aes(x= habitos, y= Total, fill = habitos))+
+  geom_bar(stat="identity", width = 0.8)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Confianza sobre el gobierno")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+```{r fig.height=5}
+habitos1111 <- b %>%
+  select(habitos, Total) %>% 
+  filter(Total %in% c(59:36))
+
+
+ggplot(habitos1111, aes(x= habitos, y= Total, fill = habitos))+
+  geom_bar(stat="identity", width = 0.8)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Confianza sobre el gobierno")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+```{r}
+habitos1111 <- b %>%
+  select(habitos, Total) %>% 
+  filter(Total %in% c(35:3))
+
+
+ggplot(habitos1111, aes(x= habitos, y= Total, fill = habitos))+
+  geom_bar(stat="identity", width = 0.8)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+
+   ggtitle("Confianza sobre el gobierno")+
+  theme(plot.title = element_text(hjust = 0.5))+ # sirve para centra el titulo
+  xlab("") + 
+  ylab("Frecuencia")+
+  scale_fill_discrete(guide = guide_legend(title = "", 
+                                             keywidth = 1, 
+                                             keyheight = 1))
+```
+
+
+
+
+

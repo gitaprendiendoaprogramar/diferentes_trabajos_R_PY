@@ -1,0 +1,35 @@
+body{ /* Normal  */
+  font-size: 17px;
+  background-repeat: no-repeat;
+  background-position: right top;
+  }
+  
+td {  /* Table  */
+  font-size: 17px;
+}
+
+h1 { /* Header 1 */
+  font-size: 28px;
+  color: DarkBlue;
+  font-family: 'Libre Caslon Display',
+  serif;
+  text-shadow: 5px 2px 8px blue;
+}
+.loca{
+  font-family: "Times New Roman", Times, serif;
+}
+.loca2{
+  font-family: "Times New Roman", Times, serif;
+}
+.loca4{
+   font-family: "Times New Roman", Times, serif;
+}
+.loca6{
+   font-family: "Times New Roman", Times, serif;
+}
+.loca7{
+   font-family: "Times New Roman", Times, serif;
+}
+.loca9{
+   font-family: "Times New Roman", Times, serif;
+}

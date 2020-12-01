@@ -1,0 +1,65 @@
+html {
+    background: linear-gradient(to top left, #050DF5, #FF0073);
+}
+
+body {
+    margin: 0;
+}
+
+.main-header {
+    text-align: center;
+    text-shadow: 4px 2px 10px black, 5px 3px 15px fuchsia;
+    background: linear-gradient(to top, #FF7ACA, pink);
+    font-family: 'Dancing Script', cursive;
+    font-style: oblique;
+    font-size: 60px;
+    font-weight: lighter;
+}
+
+.caja {
+    font-family: 'Libre Caslon Display', serif;
+    color: black;
+    font-size: 30px;
+    text-align: center;
+    text-shadow: 2px 2px 7px blue, 3px 3px 10px pink;
+    word-spacing: 30px;
+}
+
+.titulo2 {
+    text-align: center;
+    text-shadow: 4px 2px 10px black, 5px 3px 15px fuchsia;
+    text-transform: capitalize;
+    background: linear-gradient( to top, #37FC50, #67F57A, #F294E5);
+    font-family: 'Dancing Script', cursive;
+    font-style: oblique;
+    font-size: 70px;
+    font-weight: lighter;
+    margin: 60px;
+}
+
+.lista {
+    Color: white;
+    text-align: center;
+    text-shadow: 4px 2px 10px;
+    text-transform: uppercase;
+    font-family: 'Dancing Script', cursive;
+    font-size: 40px;
+    font-weight: bold;
+    font-style: none;
+    word-spacing: 20px;
+    margin-left: 50px;
+    margin-bottom: 20px;
+    margin-top: 20px
+}
+
+.final {
+    text-align: center;
+    text-shadow: 4px 2px 6px black;
+    background: linear-gradient(to top left, #FF0000, #FF00CC, #BB00FF, #1500FF, #00FFF7, #00FF00, #DDFF00, #FF9900, #FF0000);
+    font-family: 'Dancing Script', cursive;
+    font-style: oblique;
+    font-size: 100px;
+    font-weight: lighter;
+    margin-top: 10px;
+    margin-bottom: 0;
+}

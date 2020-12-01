@@ -1,0 +1,199 @@
+---
+title: "depuracion_habitos"
+author: "Zuleima carriazo"
+date: "27/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Lectura de librerias  
+
+
+library("stringr")
+library(lubridate)
+#install.packages("datos")
+library(datos)
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+# lectura de base de datos
+
+base <- read.csv2("Encuesta_habitos.csv", 
+                       encoding = "UTF-8",)
+```
+
+```{r}
+
+# selecion de todos los conjuntos de habitos 
+habitos <- base %>% 
+  select(habito_1, habito_2, habito_3, habito_4, habito_5, habito_6, habito_7, habito_8, habito_9, habito_10, habito_11, habito_12, habito_13, habito_14, habito_15, habito_16, habito_17)
+
+
+
+view(habitos)
+```
+
+
+```{r}
+# creacion a formato execl
+
+
+setwd("C:/Users/Usuario/Desktop/habitos")
+write.table(habitos, file = "conjunto_de_habitos.csv", sep = ",", row.names = TRUE)
+
+
+```
+```{r}
+tabla1 <- habitos %>% 
+  group_by(habito_1) %>% 
+  summarise(n = n())
+tabla1 <- rename(tabla1,  habitos = habito_1)
+
+
+
+tabla2 <- habitos %>%
+  group_by(habito_2) %>% 
+  summarise(n = n())
+tabla2 <- rename(tabla2,  habitos = habito_2)
+
+
+tabla3 <- habitos %>%
+  group_by(habito_3) %>% 
+  summarise(n = n())
+tabla3 <- rename(tabla3,  habitos = habito_3)
+
+
+tabla4 <- habitos %>% 
+  group_by(habito_4) %>%  
+  summarise(n = n())
+tabla4 <- rename(tabla4,  habitos = habito_4)
+
+
+tabla5 <- habitos %>% 
+  group_by(habito_5) %>% 
+  summarise(n = n()) 
+tabla5 <- rename(tabla5,  habitos = habito_5)
+
+
+
+tabla6 <- habitos %>% 
+  group_by(habito_6) %>% 
+  summarise(n = n()) 
+tabla6 <- rename(tabla6,  habitos = habito_6)
+
+
+tabla7 <- habitos %>% 
+  group_by(habito_7) %>% 
+  summarise(n = n())
+tabla7 <- rename(tabla7,  habitos = habito_7)
+
+
+tabla8 <- habitos %>% 
+  group_by(habito_8) %>% 
+  summarise(n = n())
+tabla8 <- rename(tabla8,  habitos = habito_8)
+
+
+tabla9 <- habitos %>% 
+  group_by(habito_9) %>% 
+  summarise(n = n())
+tabla9 <- rename(tabla9,  habitos = habito_9)
+
+
+tabla10 <- habitos %>% 
+  group_by(habito_10) %>% 
+  summarise(n = n())
+tabla10 <- rename(tabla10,  habitos = habito_10)
+
+tabla11 <- habitos %>% 
+  group_by(habito_11) %>% 
+  summarise(n = n())
+tabla11 <- rename(tabla11,  habitos = habito_11)
+
+
+tabla12 <- habitos %>% 
+  group_by(habito_12) %>% 
+  summarise(n = n())
+tabla12 <- rename(tabla12,  habitos = habito_12)
+
+tabla13 <- habitos %>% 
+  group_by(habito_13) %>% 
+  summarise(n = n())
+tabla13 <- rename(tabla13,  habitos = habito_13)
+
+
+tabla14 <- habitos %>% 
+  group_by(habito_14) %>% 
+  summarise(n = n())
+tabla14 <- rename(tabla14,  habitos = habito_14)
+
+
+
+
+tabla15 <- habitos %>% 
+  group_by(habito_15) %>% 
+  summarise(n = n())
+tabla15 <- rename(tabla15,  habitos = habito_15)
+
+
+
+tabla16 <- habitos %>% 
+  group_by(habito_16) %>% 
+  summarise(n = n())
+tabla16 <- rename(tabla16,  habitos = habito_16)
+
+
+
+
+tabla17 <- habitos %>% 
+  group_by(habito_17) %>% 
+  summarise(n = n())
+tabla17 <- rename(tabla17,  habitos = habito_17)
+
+
+tabla_ge <- rbind(tabla1, tabla2, tabla3, tabla4, tabla5, tabla6, tabla7, tabla8, tabla9, tabla10, tabla11, tabla12, tabla13, tabla14, tabla15, tabla16, tabla17)
+
+
+
+
+
+
+b <- tabla_ge %>%
+group_by(habitos) %>%
+summarise(Total = sum(n)) %>% 
+  arrange(desc(Total)) %>% 
+  na.omit(habitos)
+
+view(b)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

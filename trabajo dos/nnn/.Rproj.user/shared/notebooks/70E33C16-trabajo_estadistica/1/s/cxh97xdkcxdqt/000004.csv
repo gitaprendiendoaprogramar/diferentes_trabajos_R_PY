@@ -1,0 +1,5 @@
+"0","# preparación de los datos"
+"0","tab <- aguacate[, c(2)] # Exportacionde variables "
+"0","tab <- as.matrix(tab) # convertir el tibble a una matrix"
+"0","row.names(tab) <- aguacate$year # sacar el año de la matrix y dejar el resto como un vector para poder trasponer  "
+"0","tab <- t(tab) # trasponer la matrix"
